@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "d3f515aa_2d931481",
+        "filename": "main.c",
+        "patchSetId": 2
+      },
+      "lineNbr": 18,
+      "author": {
+        "id": 1013321
+      },
+      "writtenOn": "2018-02-27T14:40:19Z",
+      "side": 1,
+      "message": "for linker defined things like this, I usually just have a bunch of extern\u0027s at the top:\n\nextern RAM_SIZE;   etc ...\n\nsince you\u0027ve let the .ld specify this value.",
+      "revId": "a784173d24f70077c789151e8d0efa7f092e39b8",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "37ffce20_c7f88e43",
+        "filename": "main.c",
+        "patchSetId": 2
+      },
+      "lineNbr": 47,
+      "author": {
+        "id": 1013321
+      },
+      "writtenOn": "2018-02-27T14:40:19Z",
+      "side": 1,
+      "message": "check \u0027noreturn\u0027 here: https://gcc.gnu.org/onlinedocs/gcc/Common-Function-Attributes.html#Common-Function-Attributes",
+      "revId": "a784173d24f70077c789151e8d0efa7f092e39b8",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": false
+    }
+  ]
+}
