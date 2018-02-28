@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "4ba5afe3_51654f52",
+        "filename": "main.c",
+        "patchSetId": 2
+      },
+      "lineNbr": 18,
+      "author": {
+        "id": 1013315
+      },
+      "writtenOn": "2018-02-28T17:12:04Z",
+      "side": 1,
+      "message": "Thx, I added a TODO see comment for details.",
+      "parentUuid": "d3f515aa_2d931481",
+      "revId": "a784173d24f70077c789151e8d0efa7f092e39b8",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "37ffce20_c7f88e43",
         "filename": "main.c",
         "patchSetId": 2
@@ -30,6 +48,24 @@
       "writtenOn": "2018-02-27T14:40:19Z",
       "side": 1,
       "message": "check \u0027noreturn\u0027 here: https://gcc.gnu.org/onlinedocs/gcc/Common-Function-Attributes.html#Common-Function-Attributes",
+      "revId": "a784173d24f70077c789151e8d0efa7f092e39b8",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "126959ed_dab917e6",
+        "filename": "main.c",
+        "patchSetId": 2
+      },
+      "lineNbr": 47,
+      "author": {
+        "id": 1013315
+      },
+      "writtenOn": "2018-02-28T17:12:04Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "37ffce20_c7f88e43",
       "revId": "a784173d24f70077c789151e8d0efa7f092e39b8",
       "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
       "unresolved": false
