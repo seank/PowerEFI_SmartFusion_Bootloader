@@ -1,44 +1,44 @@
-/*
- * loader.h
- *
- *  Created on: Feb 25, 2018
- *      Author: seank
- */
+/* Copyright 2018 Sean Keys
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+      https://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+*/
 
 #ifndef LOADER_H_
 #define LOADER_H_
 
+#include <stdint.h>
 
-/* TODO once we have the loader, isp, and main application locations defined,
- * we should be able to pull these locations and sizes from the linker file.
- * Eg. extern RAM_SIZE
- *
- * I'm holding off a bit, until we figure out how we want to use the memory
- * remap functions of the SoC.
- */
-
-/* Addresses relevant for loading to ESRAM and launching application form there*/
-#define ESRAM0_BASE_ADDR       0x20000000  /* Start of 64K ESRAM */
-/* Typically the first address in the start of the linker file */
-#define ESRAM0_STACK_PTR       0x20000000  /* Start of 64K ESRAM */
-/* Program pointer is right after the stack pointer. */
-#define ESRAM0_PROGRAM_PTR     (ESRAM0_STACK_PTR + 4)
-
-/* Needs to match eNVM ISP client */
-#define ENVM_ISP_STORE_ADDRESS 0x60020000;
-
-#define BOOT_LOADER_RAM_LENGTH (1024 * 4);  /* Must match production linker file! */
-#define ESRAM_LENGTH           (1024 * 64);
-
+/* Needs to match eNVM ISP client, which sees store addresses with eNVM
+ * re-mapped to 0x0. Example, 0x60003200 is seen as 0x3200. */
+#define ENVM_ISP_STORE_ADDRESS   0x60003200
+#define ENVM_APP_STORE_ADDRESS   0x60010000
+#define ENVM_APP_STORE_SIZE      (1024 * 192)
 
 /* LEDs GPIO TODO move to common platform header. */
 #define DS3_LED_GPIO  MSS_GPIO_1
 #define DS4_LED_GPIO  MSS_GPIO_2
 #define DS3_LED_MASK  MSS_GPIO_1_MASK
 #define DS4_LED_MASK  MSS_GPIO_2_MASK
+#define S2_BTN_GPIO   MSS_GPIO_0
+#define S2_BTN_MASK   MSS_GPIO_0_MASK
 
-typedef void(*program)(void);
+/* Linker defined symbols. */
+extern uint32_t __esram_base_address;
+extern uint32_t __bootloader_ram_size;
+extern uint32_t __esram_length;
+extern uint32_t __lpddr_base_addresses;
 
-void launch_from_eSRAM_0(void) __attribute__((noreturn));
+/* Useful functions to be called from application firmware. */
+void BooteNVMapp() __attribute__((noreturn));
+void BooteNVMisp() __attribute__((noreturn));
 
 #endif /* LOADER_H_ */

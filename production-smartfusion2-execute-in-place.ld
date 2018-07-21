@@ -56,21 +56,29 @@ MEMORY
     */
     
     /* SOFTCONSOLE FLASH USE: microsemi-smartfusion2-envm */
-    rom (rx)  : ORIGIN = 0x00000000, LENGTH = 256k
+    /* We use the abs address instead of the default eNVM re-map to 0x0,
+       this lets us jump to the boot loader when running other re-mapped code.
+    */
+    rom (rx)  : ORIGIN = 0x60000000, LENGTH = 0x3200 /* 12.5K */
     
     /* SmartFusion2 internal eSRAM */
     ram (rwx) : ORIGIN = 0x2000F000, LENGTH = 4k
 }
 
-RAM_START_ADDRESS   = 0x2000F000;           /* Must be the same value MEMORY region ram ORIGIN above. */
-RAM_SIZE            = 4k;                  /* Must be the same value MEMORY region ram LENGTH above. */
-MAIN_STACK_SIZE     = 2k;                   /* Cortex main stack size. */
-MIN_SIZE_HEAP       = 0k;                   /* needs to be calculated for your application */
-
+RAM_START_ADDRESS   = 0x2000F000;    /* Must be the same value MEMORY region ram ORIGIN above. */
+RAM_SIZE            = 4k;            /* Must be the same value MEMORY region ram LENGTH above. */
+MAIN_STACK_SIZE     = 2k;            /* Cortex main stack size. */
+MIN_SIZE_HEAP       = 0k;            /* needs to be calculated for your application. */
+ESRAM_LENGTH        = 64k;           /* Always 64k unless you disable ECC etc, then you get 80k. */
+LPDDR_START_ADDRESS = 0xA0000000;    /* Start of external DDR memory. */
+ESRAM_START_ADDRESS = 0x20000000;    /* Start of internal eSRAM. */
 /*******************************************************************************
  * End of board customization.
  *******************************************************************************/
- 
+PROVIDE (__esram_base_address = ESRAM_START_ADDRESS);
+PROVIDE (__lpddr_base_addresses = LPDDR_START_ADDRESS);
+PROVIDE (__esram_length = ESRAM_LENGTH);
+PROVIDE (__bootloader_ram_size = RAM_SIZE);
 PROVIDE (__main_stack_start = RAM_START_ADDRESS + RAM_SIZE);
 PROVIDE (__process_stack_start = __main_stack_start - MAIN_STACK_SIZE);
 PROVIDE (_estack = __main_stack_start);

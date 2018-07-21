@@ -1,49 +1,95 @@
+/* Copyright 2018 Sean Keys
+
+   Licensed under the Apache License, Version 2.0 (the "License")
+   You may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+      https://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+*/
 
 #include "inc/loader.h"
 
 #include "m2sxxx.h"
 #include "mss_gpio.h"
-#include <stdint.h>
 
 #if (MSS_SYS_MDDR_CONFIG_BY_CORTEX == 1)
 #error "Please turn off DDR initialization! See the comment in this file above."
 #endif
 
-/* See loader.h for details on these constants. */
-uint32_t * const esram0_base = (uint32_t *)ESRAM0_BASE_ADDR;
-uint32_t * const esram0_stack_ptr = (uint32_t *)ESRAM0_STACK_PTR;
-uint32_t * const esram0_program_ptr = (uint32_t *)ESRAM0_PROGRAM_PTR;
-uint32_t * const envm_isp_store_address = (uint32_t *)ENVM_ISP_STORE_ADDRESS;
+typedef void(*program)(void);
 
-const uint32_t boot_loader_ram_allocation = (1024 * 4);  /* Needs to match the linker file! */
-const uint32_t esram_length = (1024 * 64);
+typedef enum RAMmapping {
+  DEFAULT_REMAP = 0,
+  LPDDR_REMAP   = 1,
+  ESRAM_REMAP   = 2,
+}RAMmapping_t;
+
+/* Prototypes */
+void LoadAndLaunchFromRAM(uint32_t * const image_addr,
+                    uint32_t * const ram_addr,
+                    uint32_t image_length, RAMmapping_t map)
+                    __attribute__((noreturn)) __attribute__((optimize("O0")));
+
+/* See loader.h for details on these constants. */
+uint32_t * const esram_base = &__esram_base_address;
+uint32_t * const lpddr_base = &__lpddr_base_addresses;
+const uint32_t boot_loader_ram_allocation = (uint32_t)&__bootloader_ram_size;
+const uint32_t esram_length = (uint32_t)&__esram_length;
+uint32_t * const envm_isp_store = (uint32_t *)ENVM_ISP_STORE_ADDRESS;
+uint32_t * const envm_app_store = (uint32_t *)ENVM_APP_STORE_ADDRESS;
+
+/* Image offsets (in 32-bit words). */
+/* TODO (skeys) We need a header section to store a CRC or a signature. */
+const uint32_t reset_vector_ptr_offset = 1;
+const uint32_t stack_ptr_offset = 0;
 
 /* function to copy code to eSRAM*/
-void copy_image_to_esram() {
+void CopyImgToRAM(uint32_t * const image_addr, uint32_t * const ram_addr,
+    uint32_t image_length) {
   uint32_t i = 0;
   uint32_t *exeDestAddr;
   uint32_t *exeSrcAddr;
 
-  exeDestAddr = esram0_base;
-  exeSrcAddr = envm_isp_store_address;
+  exeDestAddr = ram_addr;
+  exeSrcAddr = image_addr;
 
-  uint32_t words = (esram_length - boot_loader_ram_allocation) / sizeof(uint32_t);
+  uint32_t words = image_length / sizeof(uint32_t);
   /* Copy from internal flash to internal sram 32-bits at a time. */
   for (i = 0; i < words; ++i) {
     *exeDestAddr++ = *exeSrcAddr++;
   }
 }
 
-/* Function to launch ISP application from eSRAM. */
-void launch_from_eSRAM_0(void) {
-  /* pointer to reset handler of application. */
-  program program_entry = (program)*(esram0_program_ptr);
+void LoadAndLaunchFromRAM(uint32_t * const image_addr, uint32_t * const ram_addr,
+    uint32_t image_length, RAMmapping_t map) {
+
+  CopyImgToRAM(image_addr, ram_addr, image_length);
+
+  /* Image contains pointers to VMA addresses for reset vector and
+   * stack pointer, so just read them in from ROM and dereference.
+   */
+  program program_entry = (program) *(image_addr + reset_vector_ptr_offset);
   /* Set the stack pointer to that of the application's definition. */
-  __set_MSP(*esram0_stack_ptr);
+  __set_MSP(*(image_addr + stack_ptr_offset));
+
+  /* Re-map RAM (eSRAM or LPDDR) if required */
+  switch (map) {
+  case LPDDR_REMAP:
+    /* Re-map DDR address space to 0x00000000 */
+    SYSREG->DDR_CR = 0x1;
+    break;
+  default:
+    break;
+  }
   /* Go! */
   program_entry();
   /* http://www.keil.com/support/man/docs/armcc/armcc_chr1359124976881.htm */
-  while(1);
+  while (1);
 }
 
 /* Initialize DDR SRAM as per Emcraft SOM specs. */
@@ -135,16 +181,16 @@ void init_mddr_lpddr(void) {
   }
 }
 
-void execute_isp(void) {
-  /* Initialize MSS GPIOs. */
-  MSS_GPIO_init();
+void BooteNVMapp() {
+  LoadAndLaunchFromRAM(envm_app_store, lpddr_base, ENVM_APP_STORE_SIZE,
+                       LPDDR_REMAP);
+}
 
-  /* Configure MSS GPIOs. */
-  MSS_GPIO_config(DS3_LED_GPIO, MSS_GPIO_OUTPUT_MODE);
-  MSS_GPIO_config(DS4_LED_GPIO, MSS_GPIO_OUTPUT_MODE);
-
-  /* Set LEDs to initial state. */
-  MSS_GPIO_set_outputs(MSS_GPIO_get_outputs() | DS3_LED_MASK | DS4_LED_MASK);
+/* Function to launch ISP application from eSRAM. */
+void BooteNVMisp() {
+  LoadAndLaunchFromRAM(envm_isp_store, esram_base,
+                       (esram_length - boot_loader_ram_allocation),
+                       DEFAULT_REMAP);
 }
 
 int main() {
@@ -157,13 +203,17 @@ int main() {
   /* Configure MSS GPIOs. */
   MSS_GPIO_config(DS3_LED_GPIO, MSS_GPIO_OUTPUT_MODE);
   MSS_GPIO_config(DS4_LED_GPIO, MSS_GPIO_OUTPUT_MODE);
+  MSS_GPIO_config(S2_BTN_GPIO, MSS_GPIO_INPUT_MODE);
 
   /* Set LEDs to initial state. */
   MSS_GPIO_set_outputs(MSS_GPIO_get_outputs() | DS3_LED_MASK | DS4_LED_MASK);
 
-  /* Initialization all necessary hardware components */
-  copy_image_to_esram();
-  launch_from_eSRAM_0();
+  if (MSS_GPIO_get_inputs() & S2_BTN_MASK) {
+    BooteNVMapp();
+  } else {
+    BooteNVMisp();
+  }
+
   while (1) {
     // execution never comes here
   }

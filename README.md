@@ -15,5 +15,5 @@ Gerrithub is a central location used for easy managment of the code review proce
 Simply perform your changes and [submit for review](https://review.gerrithub.io/Documentation/intro-project-owner.html#code-review):
 
 ```bash
-git push ssh://seank@gerrithub.io:29418/seank/PowerEFI_Loader HEAD:refs/for/master
+git push ssh://seank@gerrithub.io:29418/seank/PowerEFI_SmartFusion_Bootloader HEAD:refs/for/master
 ```
