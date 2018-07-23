@@ -1,0 +1,142 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "38d9998f_d3356bd5",
+        "filename": "inc/loader.h",
+        "patchSetId": 1
+      },
+      "lineNbr": 34,
+      "author": {
+        "id": 1013321
+      },
+      "writtenOn": "2018-07-23T02:53:40Z",
+      "side": 1,
+      "message": "make your linker imports consts too",
+      "range": {
+        "startLine": 34,
+        "startChar": 3,
+        "endLine": 34,
+        "endChar": 26
+      },
+      "revId": "a5a0dab2997120d98f85bff728de1e215571a500",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "6436220e_00ba1ea2",
+        "filename": "main.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 43,
+      "author": {
+        "id": 1013321
+      },
+      "writtenOn": "2018-07-23T02:53:40Z",
+      "side": 1,
+      "message": "throw a const in here next time round.. this is a \u0027from\u0027 location right?",
+      "range": {
+        "startLine": 43,
+        "startChar": 7,
+        "endLine": 43,
+        "endChar": 10
+      },
+      "revId": "a5a0dab2997120d98f85bff728de1e215571a500",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "de9303d1_96d2ad55",
+        "filename": "main.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 44,
+      "author": {
+        "id": 1013321
+      },
+      "writtenOn": "2018-07-23T02:53:40Z",
+      "side": 1,
+      "message": "throw a const in here next time round.. this is a \u0027from\u0027 location right?",
+      "range": {
+        "startLine": 44,
+        "startChar": 7,
+        "endLine": 44,
+        "endChar": 10
+      },
+      "revId": "a5a0dab2997120d98f85bff728de1e215571a500",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "83fab573_c8bde170",
+        "filename": "main.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 52,
+      "author": {
+        "id": 1013321
+      },
+      "writtenOn": "2018-07-23T02:53:40Z",
+      "side": 1,
+      "message": "throw a const in here next time round.. this is a \u0027from\u0027 location right?",
+      "range": {
+        "startLine": 52,
+        "startChar": 25,
+        "endLine": 52,
+        "endChar": 28
+      },
+      "revId": "a5a0dab2997120d98f85bff728de1e215571a500",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "728cbb92_b04c7b40",
+        "filename": "main.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 68,
+      "author": {
+        "id": 1013321
+      },
+      "writtenOn": "2018-07-23T02:53:40Z",
+      "side": 1,
+      "message": "throw a const in here next time round.. this is a \u0027from\u0027 location right?",
+      "range": {
+        "startLine": 68,
+        "startChar": 33,
+        "endLine": 68,
+        "endChar": 36
+      },
+      "revId": "a5a0dab2997120d98f85bff728de1e215571a500",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "43ff634e_cf09204d",
+        "filename": "main.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 217,
+      "author": {
+        "id": 1013321
+      },
+      "writtenOn": "2018-07-23T02:53:40Z",
+      "side": 1,
+      "message": "for stuff like this, I usually throw code in to detect if debugger is connected and then do a BKPT. If no debugger, then I just do a sys reset through the nvic.\n\nyou can always do a BKPT without checking for anything too --- I think it just skips over the instruction. can\u0027t rememeber for sure.",
+      "range": {
+        "startLine": 217,
+        "startChar": 2,
+        "endLine": 217,
+        "endChar": 14
+      },
+      "revId": "a5a0dab2997120d98f85bff728de1e215571a500",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": true
+    }
+  ]
+}
