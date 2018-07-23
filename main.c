@@ -30,18 +30,18 @@ typedef enum RAMmapping {
 }RAMmapping_t;
 
 /* Prototypes */
-void LoadAndLaunchFromRAM(uint32_t * const image_addr,
-                    uint32_t * const ram_addr,
+void LoadAndLaunchFromRAM(const uint32_t * const image_addr,
+                    const uint32_t * const ram_addr,
                     uint32_t image_length, RAMmapping_t map)
                     __attribute__((noreturn)) __attribute__((optimize("O0")));
 
 /* See loader.h for details on these constants. */
-uint32_t * const esram_base = &__esram_base_address;
-uint32_t * const lpddr_base = &__lpddr_base_addresses;
+const uint32_t * const esram_base = &__esram_base_address;
+const uint32_t * const lpddr_base = &__lpddr_base_addresses;
 const uint32_t boot_loader_ram_allocation = (uint32_t)&__bootloader_ram_size;
 const uint32_t esram_length = (uint32_t)&__esram_length;
-uint32_t * const envm_isp_store = (uint32_t *)ENVM_ISP_STORE_ADDRESS;
-uint32_t * const envm_app_store = (uint32_t *)ENVM_APP_STORE_ADDRESS;
+const uint32_t * const envm_isp_store = (uint32_t *)ENVM_ISP_STORE_ADDRESS;
+const uint32_t * const envm_app_store = (uint32_t *)ENVM_APP_STORE_ADDRESS;
 
 /* Image offsets (in 32-bit words). */
 /* TODO (skeys) We need a header section to store a CRC or a signature. */
@@ -49,14 +49,15 @@ const uint32_t reset_vector_ptr_offset = 1;
 const uint32_t stack_ptr_offset = 0;
 
 /* function to copy code to eSRAM*/
-void CopyImgToRAM(uint32_t * const image_addr, uint32_t * const ram_addr,
+void CopyImgToRAM(const uint32_t * const image_addr,
+                  const uint32_t * const ram_addr,
     uint32_t image_length) {
   uint32_t i = 0;
   uint32_t *exeDestAddr;
   uint32_t *exeSrcAddr;
 
-  exeDestAddr = ram_addr;
-  exeSrcAddr = image_addr;
+  exeDestAddr = (uint32_t *)ram_addr;
+  exeSrcAddr = (uint32_t *)image_addr;
 
   uint32_t words = image_length / sizeof(uint32_t);
   /* Copy from internal flash to internal sram 32-bits at a time. */
@@ -65,7 +66,7 @@ void CopyImgToRAM(uint32_t * const image_addr, uint32_t * const ram_addr,
   }
 }
 
-void LoadAndLaunchFromRAM(uint32_t * const image_addr, uint32_t * const ram_addr,
+void LoadAndLaunchFromRAM(const uint32_t * const image_addr, const uint32_t * const ram_addr,
     uint32_t image_length, RAMmapping_t map) {
 
   CopyImgToRAM(image_addr, ram_addr, image_length);
@@ -207,7 +208,7 @@ int main() {
 
   /* Set LEDs to initial state. */
   MSS_GPIO_set_outputs(MSS_GPIO_get_outputs() | DS3_LED_MASK | DS4_LED_MASK);
-
+  /* If signal is high on switch two (S2), launch Application. */
   if (MSS_GPIO_get_inputs() & S2_BTN_MASK) {
     BooteNVMapp();
   } else {

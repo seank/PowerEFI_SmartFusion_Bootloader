@@ -32,10 +32,10 @@
 #define S2_BTN_MASK   MSS_GPIO_0_MASK
 
 /* Linker defined symbols. */
-extern uint32_t __esram_base_address;
-extern uint32_t __bootloader_ram_size;
-extern uint32_t __esram_length;
-extern uint32_t __lpddr_base_addresses;
+extern const uint32_t __esram_base_address;
+extern const uint32_t __bootloader_ram_size;
+extern const uint32_t __esram_length;
+extern const uint32_t __lpddr_base_addresses;
 
 /* Useful functions to be called from application firmware. */
 void BooteNVMapp() __attribute__((noreturn));
